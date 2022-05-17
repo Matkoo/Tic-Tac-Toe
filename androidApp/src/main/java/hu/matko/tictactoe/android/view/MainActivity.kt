@@ -154,7 +154,7 @@ open class MainActivity : AppCompatActivity() {
                 SchemaUtils.create (Game)
                 GameEntity.new {
                     gameDate = date
-                    winner = winnerStr
+                    winner = winnerStr.toString()
                     gamePos = gamePosition
                 }
 
