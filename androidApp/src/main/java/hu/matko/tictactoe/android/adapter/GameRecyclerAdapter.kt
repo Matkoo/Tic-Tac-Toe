@@ -8,15 +8,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import hu.matko.tictactoe.android.R
 import hu.matko.tictactoe.android.model.Game
+import hu.matko.tictactoe.android.model.GameEntity
 
 /**
  * @author Matkovics Gergely<br></br>
  * E-mail: [gergelymatkovics82@gmail.com](mailto:gergelymatkovics82@gmail.com)
  */
 
-class GameRecyclerAdapter(gameList: List<Game>, mContext: Context) :
+class GameRecyclerAdapter(gameList: List<GameEntity>, mContext: Context) :
     RecyclerView.Adapter<GameRecyclerAdapter.GameVH>() {
-    private var gameList: List<Game> = ArrayList()
+    private var gameList: List<GameEntity> = ArrayList()
     private val mContext: Context
     private val lastPlace = 0
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameVH {

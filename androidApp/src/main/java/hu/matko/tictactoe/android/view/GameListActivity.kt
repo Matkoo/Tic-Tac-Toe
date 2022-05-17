@@ -5,10 +5,16 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import hu.matko.tictactoe.android.R
 import hu.matko.tictactoe.android.adapter.GameRecyclerAdapter
 import hu.matko.tictactoe.android.model.Game
+import hu.matko.tictactoe.android.model.GameEntity
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
 /**
  * @author Matkovics Gergely<br></br>
@@ -16,7 +22,7 @@ import hu.matko.tictactoe.android.model.Game
  */
 
 open class GameListActivity : AppCompatActivity() {
-    private var gameList: List<Game?>? = null
+    private var gameList: List<GameEntity>? = null
     private var adapter: GameRecyclerAdapter? = null
 
 
@@ -29,6 +35,8 @@ open class GameListActivity : AppCompatActivity() {
 
         val backToMain = findViewById(R.id.backToMain) as Button
         backToMain.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
+
+        initList()
     }
 
 
@@ -51,8 +59,17 @@ open class GameListActivity : AppCompatActivity() {
     }
 
     private fun initList() {
-//    adapter = GameRecyclerAdapter(gameList as List<Game>, baseContext)
-//    recyclerView!!.layoutManager = LinearLayoutManager(this)
-//    recyclerView!!.adapter = adapter
+
+        runBlocking {
+            val db = Database.connect("jdbc:sqlite:/data/data.db", "org.sqlite.JDBC")
+            transaction (db) {
+                SchemaUtils.create (Game)
+               gameList = GameEntity.all().toList()
+            }
+        }
+
+    adapter = GameRecyclerAdapter(gameList as List<GameEntity>, baseContext)
+    recyclerView!!.layoutManager = LinearLayoutManager(this)
+    recyclerView!!.adapter = adapter
     }
 }

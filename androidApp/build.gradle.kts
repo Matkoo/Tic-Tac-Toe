@@ -22,6 +22,9 @@ android {
 
 val exposedVersion: String by project
 dependencies {
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    implementation("com.h2database:h2:2.1.210")
+
 
     implementation(project(":shared"))
     implementation("com.google.android.material:material:1.4.0")
@@ -33,10 +36,11 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
 
     //SQLite connection
-//    implementation("org.xerial:sqlite-jdbc:3.30.1")
+    // https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+//    implementation("org.xerial:sqlite-jdbc:3.7.2")
 
-    // https://mvnrepository.com/artifact/com.h2database/h2
-    testImplementation("com.h2database:h2:2.1.212")
+
+
 
 
 }

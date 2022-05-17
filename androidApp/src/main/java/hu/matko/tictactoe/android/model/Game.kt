@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.Column
  * E-mail: [gergelymatkovics82@gmail.com](mailto:gergelymatkovics82@gmail.com)
  */
 
-object Game : IntIdTable("game_data"){
+object Game : IntIdTable(){
 
     var gameDate: Column<String> = varchar("game_date",255)
     var winner: Column<String> = varchar("winner",255)
@@ -25,5 +25,6 @@ class GameEntity (id: EntityID<Int>): IntEntity(id) {
     var gameDate by Game.gameDate
     var winner by Game.winner
     var gamePos by Game.gamePos
+
 
 }

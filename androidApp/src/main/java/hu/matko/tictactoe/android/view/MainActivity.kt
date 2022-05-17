@@ -35,6 +35,10 @@ open class MainActivity : AppCompatActivity() {
     var toast: Toast? = null
     var isFinished = false
 
+    val db = Database.connect("jdbc:h2:mem:regular", "org.h2.Driver")
+
+    private var listGames: List<GameEntity>? = null
+
 
     // Player representation
     // 0 - X
@@ -145,21 +149,21 @@ open class MainActivity : AppCompatActivity() {
         }
 //        database!!.gameDAO().saveGame(Game(date, winnerStr, gamePosition))
 
+//        runBlocking {
 
-        runBlocking {
-            val db = Database.connect("jdbc:h2:mem:regular", "org.h2.Driver")
-//            TransactionManager.manager.defaultIsolationLevel =
-//                Connection.TRANSACTION_SERIALIZABLE
-            transaction (db) {
-                SchemaUtils.create (Game)
-                GameEntity.new {
-                    gameDate = date
-                    winner = winnerStr.toString()
+        transaction  {
+            SchemaUtils.create(Game)
+            GameEntity.new {
+                gameDate = date
+                    winner = winnerStr!!
                     gamePos = gamePosition
                 }
+                listGames = GameEntity.all().toList()
+                listGames?.forEach{ println(it.winner +" "+it.gamePos)}
 
             }
-        }
+//        }
+
 
     }
 
@@ -190,6 +194,8 @@ open class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
 
+        TransactionManager.defaultDatabase = db
+
         toast = Toast.makeText(baseContext, "A játék el lett mentve", Toast.LENGTH_LONG)
         toast?.setGravity(Gravity.CENTER, 0, 0)
 
@@ -198,13 +204,23 @@ open class MainActivity : AppCompatActivity() {
             gameReset(view = null)
         }
 
-        val gameList = findViewById(R.id.gameList) as Button
+        var gameList = findViewById(R.id.gameList) as Button
         gameList.setOnClickListener {
             //Reset game before leave the activity
             gameReset(view = null)
             //Start the new activity
-            startActivity(Intent(this, GameListActivity::class.java))
+//            startActivity(Intent(this, GameListActivity::class.java))
+
+//            runBlocking {
+                transaction {
+                    SchemaUtils.create (Game)
+                }
+//            }
+
+
         }
+
+
 
 
     }
