@@ -12,16 +12,10 @@ import androidx.appcompat.app.AppCompatActivity
 import hu.matko.tictactoe.android.R
 import hu.matko.tictactoe.android.model.Game
 import hu.matko.tictactoe.android.model.GameEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,11 +25,15 @@ import java.util.*
  */
 
 open class MainActivity : AppCompatActivity() {
-    //    private var database: GameDatabase? = null
+
     var toast: Toast? = null
+
     var isFinished = false
 
-    val db = Database.connect("jdbc:h2:mem:regular", "org.h2.Driver")
+    val db = Database.connect(
+        "jdbc:h2:file:/data/data/hu.matko.tictactoe.android/data/data.db",
+        "org.h2.Driver"
+    )
 
     private var listGames: List<GameEntity>? = null
 
@@ -147,23 +145,17 @@ open class MainActivity : AppCompatActivity() {
                 gamePosition += "\n"
             }
         }
-//        database!!.gameDAO().saveGame(Game(date, winnerStr, gamePosition))
+        //save the game to the database
+        transaction {
 
-//        runBlocking {
-
-        transaction  {
-            SchemaUtils.create(Game)
             GameEntity.new {
                 gameDate = date
-                    winner = winnerStr!!
-                    gamePos = gamePosition
-                }
-                listGames = GameEntity.all().toList()
-                listGames?.forEach{ println(it.winner +" "+it.gamePos)}
-
+                winner = winnerStr!!
+                gamePos = gamePosition
             }
-//        }
 
+
+        }
 
     }
 
@@ -193,8 +185,9 @@ open class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //crate the database
+        transaction(db) { SchemaUtils.create(Game) }
 
-        TransactionManager.defaultDatabase = db
 
         toast = Toast.makeText(baseContext, "A játék el lett mentve", Toast.LENGTH_LONG)
         toast?.setGravity(Gravity.CENTER, 0, 0)
@@ -208,23 +201,12 @@ open class MainActivity : AppCompatActivity() {
         gameList.setOnClickListener {
             //Reset game before leave the activity
             gameReset(view = null)
-            //Start the new activity
-//            startActivity(Intent(this, GameListActivity::class.java))
 
-//            runBlocking {
-                transaction {
-                    SchemaUtils.create (Game)
-                }
-//            }
-
+            startActivity(Intent(this, GameListActivity::class.java))
 
         }
 
-
-
-
     }
-
 
     companion object {
         // State meanings:
