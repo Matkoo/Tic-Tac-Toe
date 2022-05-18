@@ -8,6 +8,7 @@
     <application
         android:allowBackup="false"
         android:supportsRtl="true"
+        android:label="Tic Tac Toe"
         android:icon="@mipmap/tictactoe_launcher"
         android:theme="@style/AppTheme">
         <activity
